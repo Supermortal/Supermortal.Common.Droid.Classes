@@ -55,6 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Concrete\DroidSQLite.cs" />
     <Compile Include="Helpers\AudioHelper.cs" />
+    <Compile Include="Helpers\BitmapHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
