@@ -53,18 +53,20 @@ namespace Supermortal.Common.Droid.Abstract
         protected int _drawerClosedResourceId;
         protected SupportDrawerLayout _drawerLayout;
         protected ListView _drawerView;
+        protected int _mainContentResourceId;
 
         #endregion
 
         #region Drawer
 
-        protected void SetupDrawer(int drawerItemResourceId, int drawerViewResourceId, int drawerLayoutResourceId, int drawerOpenResourceId, int drawerClosedResourceId)
+        protected void SetupDrawer(int drawerItemResourceId, int drawerViewResourceId, int drawerLayoutResourceId, int drawerOpenResourceId, int drawerClosedResourceId, int mainContentResourceId)
         {
             _drawerViewResourceId = drawerViewResourceId;
             _drawerLayoutResourceId = drawerLayoutResourceId;
             _drawerItemResourceId = drawerItemResourceId;
             _drawerOpenResourceId = drawerOpenResourceId;
             _drawerClosedResourceId = drawerClosedResourceId;
+            _mainContentResourceId = mainContentResourceId;
 
             SetupDrawer();
         }
@@ -98,7 +100,19 @@ namespace Supermortal.Common.Droid.Abstract
 
         protected void Drawer_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-            
+            var module = GetFragmentInstance((int)e.Id);
+            ShowFragment(module);
+
+            CloseDrawer();
+        }
+
+        protected void ShowFragment(ModuleFragment module)
+        {
+            //TODO deal with authentication
+
+            var trans = SupportFragmentManager.BeginTransaction();
+            trans.Replace(_mainContentResourceId, module);
+            trans.Commit();
         }
 
         #endregion
@@ -172,6 +186,7 @@ namespace Supermortal.Common.Droid.Abstract
         {
             _drawerLayout.OpenDrawer(_drawerView);
             DrawerState = DrawerState.Open;
+            _drawerToggle.SyncState();
         }
 
         protected void ToggleDrawer()
@@ -190,6 +205,7 @@ namespace Supermortal.Common.Droid.Abstract
         {
             _drawerLayout.CloseDrawer(_drawerView);
             DrawerState = DrawerState.Closed;
+            _drawerToggle.SyncState();
         }
 
         #endregion
