@@ -1,5 +1,6 @@
 ﻿using SupportActivity = Android.Support.V7.App.AppCompatActivity;
 using SupportFragment = Android.Support.V4.App.Fragment;
+using SupportDrawerLayout = Android.Support.V4.Widget.DrawerLayout;
 
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,10 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace Supermortal.Common.Droid.Classes.Abstract
+using Supermortal.Common.Droid.Concrete;
+using Supermortal.Common.Droid.Enums;
+
+namespace Supermortal.Common.Droid.Abstract
 {
     [Activity(Label = "ModuleActivity")]			
     public abstract class ModuleActivity : SupportActivity
@@ -26,6 +30,8 @@ namespace Supermortal.Common.Droid.Classes.Abstract
         protected Dictionary<int, ModuleFragment> Modules = new Dictionary<int, ModuleFragment>();
         protected Dictionary<int, string> ModuleTitles = new Dictionary<int, string>();
 
+        #region Drawer Properties
+
         private string[] _drawerTitles;
 
         protected string[] DrawerTitles
@@ -36,10 +42,89 @@ namespace Supermortal.Common.Droid.Classes.Abstract
             } 
         }
 
+        protected DrawerState DrawerState { get; private set; }
+
+        protected ArrayAdapter _drawerAdapter;
+        protected int _drawerViewResourceId;
+        protected int _drawerLayoutResourceId;
+        protected ModuleDrawerToggle _drawerToggle;
+        protected int _drawerItemResourceId;
+        protected int _drawerOpenResourceId;
+        protected int _drawerClosedResourceId;
+        protected SupportDrawerLayout _drawerLayout;
+        protected ListView _drawerView;
+
+        #endregion
+
+        #region Drawer
+
+        protected void SetupDrawer(int drawerItemResourceId, int drawerViewResourceId, int drawerLayoutResourceId, int drawerOpenResourceId, int drawerClosedResourceId)
+        {
+            _drawerViewResourceId = drawerViewResourceId;
+            _drawerLayoutResourceId = drawerLayoutResourceId;
+            _drawerItemResourceId = drawerItemResourceId;
+            _drawerOpenResourceId = drawerOpenResourceId;
+            _drawerClosedResourceId = drawerClosedResourceId;
+
+            SetupDrawer();
+        }
+
+        private void SetupDrawer()
+        {
+            if (_drawerLayout != null && _drawerView != null)
+                CloseDrawer();
+
+            _drawerLayout = FindViewById<SupportDrawerLayout>(_drawerLayoutResourceId);
+            _drawerView = FindViewById<ListView>(_drawerViewResourceId);
+
+            _drawerAdapter = new ArrayAdapter<string>(this, _drawerItemResourceId, DrawerTitles);
+            _drawerView.Adapter = _drawerAdapter;
+            _drawerView.ItemClick += Drawer_ItemClick;
+
+            _drawerToggle = new ModuleDrawerToggle(
+                this,                           //Host Activity
+                _drawerLayout,                  //DrawerLayout
+                _drawerOpenResourceId,     //Opened Message
+                _drawerClosedResourceId     //Closed Message
+            );
+
+            _drawerLayout.SetDrawerListener(_drawerToggle);
+            SupportActionBar.SetHomeButtonEnabled(true);
+            SupportActionBar.SetDisplayShowTitleEnabled(true);
+            _drawerToggle.SyncState();
+
+            DrawerState = DrawerState.Closed;
+        }
+
+        protected void Drawer_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
+        {
+            
+        }
+
+        #endregion
+
+        #region Lifecycle
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
         }
+
+        protected override void OnPostCreate(Bundle savedInstanceState)
+        {
+            base.OnPostCreate(savedInstanceState);
+            _drawerToggle.SyncState();
+        }
+
+        public override void OnConfigurationChanged(Android.Content.Res.Configuration newConfig)
+        {
+            base.OnConfigurationChanged(newConfig);
+            _drawerToggle.OnConfigurationChanged(newConfig);
+        }
+
+        #endregion
+
+        #region Methods
 
         protected void RegisterModule<T>(string moduleTitle) where T : ModuleFragment
         {
@@ -53,6 +138,7 @@ namespace Supermortal.Common.Droid.Classes.Abstract
         protected void ResetDrawer()
         {
             _drawerTitles = null;
+            SetupDrawer();
         }
 
         protected ModuleFragment GetFragmentInstance(int itemId)
@@ -81,6 +167,32 @@ namespace Supermortal.Common.Droid.Classes.Abstract
             var itemId = ModuleTypeToIdMap[moduleType];
             return (T)GetFragmentInstance(itemId);
         }
+
+        protected void OpenDrawer()
+        {
+            _drawerLayout.OpenDrawer(_drawerView);
+            DrawerState = DrawerState.Open;
+        }
+
+        protected void ToggleDrawer()
+        {
+            if (DrawerState == DrawerState.Closed)
+            {
+                OpenDrawer();
+            }
+            else if (DrawerState == DrawerState.Open)
+            {
+                CloseDrawer();
+            }
+        }
+
+        protected void CloseDrawer()
+        {
+            _drawerLayout.CloseDrawer(_drawerView);
+            DrawerState = DrawerState.Closed;
+        }
+
+        #endregion
     }
 }
 

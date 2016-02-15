@@ -13,21 +13,21 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 
-namespace Supermortal.Common.Droid.Classes.Abstract
+namespace Supermortal.Common.Droid.Abstract
 {
     public abstract class ModuleFragment : SupportFragment
     {
 
-        public abstract string ModuleTitle { get; set; }
+        public string ModuleTitle { get; set; }
 
-        protected virtual void OnCreate(Bundle savedInstanceState)
+        public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
             // Create your fragment here
         }
 
-        protected virtual View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             return base.OnCreateView(inflater, container, savedInstanceState);
         }

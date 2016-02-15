@@ -64,6 +64,8 @@
     <Compile Include="Helpers\BitmapHelper.cs" />
     <Compile Include="Abstract\ModuleActivity.cs" />
     <Compile Include="Abstract\ModuleFragment.cs" />
+    <Compile Include="Concrete\ModuleDrawerToggle.cs" />
+    <Compile Include="Models\Enums\DrawerState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
