@@ -100,10 +100,14 @@ namespace Supermortal.Common.Droid.Abstract
 
         protected void Drawer_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-            var module = GetFragmentInstance((int)e.Id);
-            ShowFragment(module);
-
+            ShowFragment((int)e.Id);
             CloseDrawer();
+        }
+
+        protected void ShowFragment(int itemId)
+        {
+            var module = GetFragmentInstance(itemId);
+            ShowFragment(module);
         }
 
         protected void ShowFragment(ModuleFragment module)
@@ -191,13 +195,13 @@ namespace Supermortal.Common.Droid.Abstract
 
         protected void ToggleDrawer()
         {
-            if (DrawerState == DrawerState.Closed)
-            {
-                OpenDrawer();
-            }
-            else if (DrawerState == DrawerState.Open)
+            if (_drawerLayout.IsDrawerOpen(_drawerView))
             {
                 CloseDrawer();
+            }
+            else
+            {
+                OpenDrawer();
             }
         }
 
